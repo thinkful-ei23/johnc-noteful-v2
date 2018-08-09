@@ -31,12 +31,12 @@ router.put('/folders/:id', (req,res,next) =>{
     let id = req.params.id
 
     const updateObj = {};
-const updateableFields = ['name'];
+    const updateableFields = ['name'];
 
-updateableFields.forEach(field => {
-    if (field in req.body) {
-        updateObj[field] = req.body[field];
-    }
+    updateableFields.forEach(field => {
+        if (field in req.body) {
+            updateObj[field] = req.body[field];
+        }
     });
 
     if (!updateObj.name) {
@@ -64,6 +64,7 @@ router.post('/folders', (req,res,next) =>{
     const {name} = req.body
 
     const newItem = {name}
+
     if (!newItem.name) {
         const err = new Error('Missing `name` in request body');
         err.status = 400;
@@ -73,7 +74,7 @@ router.post('/folders', (req,res,next) =>{
     knex('folders')
     .insert(newItem)
     .returning(['id','name'])
-    .then((result) => res.status(201).json(result))
+    .then((result) => res.location(`${req.originalUrl}/${result.id}`).status(201).json(result))
     .catch(err => next(err));
 })
 
